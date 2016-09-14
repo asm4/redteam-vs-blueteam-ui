@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load core_template_tags %}
 <html>
   <head>
     <title>Red Team vs. Blue Team</title>
@@ -6,6 +7,8 @@
     <link rel="stylesheet" href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}">
     <link rel="stylesheet" href="{% static 'bower_components/font-awesome/css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    {% block head %}
+    {% endblock %}
     <script src="{% static 'bower_components/jquery/dist/jquery.min.js' %}"></script>
   </head>
   <body>
@@ -20,10 +23,22 @@
         </div>
         <div class="collapse navbar-collapse" id="main-navbar">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#"><i class="fa fa-bar-chart" aria-hidden="true"></i> Score Board</a></li>
-            <li><a href="#"><i class="fa fa-terminal" aria-hidden="true"></i> Team</a></li>
-            <li><a href="#"><i class="fa fa-comments" aria-hidden="true"></i> Contact</a></li>
-            <li><a href="#"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a></li>
+            {% current_path as current_url %}
+            <li class="{% if current_url == '' %}active{% endif %}"><a href="#"><i class="fa fa-bar-chart" aria-hidden="true"></i> Score Board</a></li>
+            <li class="{% if current_url == '' %}active{% endif %}"><a href="#"><i class="fa fa-terminal" aria-hidden="true"></i> Team</a></li>
+            <li class="{% if current_url == '' %}active{% endif %}"><a href="#"><i class="fa fa-comments" aria-hidden="true"></i> Contact</a></li>
+            {% is_logged_in as logged_in %}
+            {% if logged_in %}
+              {% url 'logout' as logout_url %}
+              <li class="{% if current_url == 'logout' %}active{% endif %}">
+                <a href="{% url 'logout' %}"><i class="fa fa-sign-out" aria-hidden="true"></i> Logout</a>
+              </li>
+            {% else %}
+              {% url 'login' as login_url %}
+              <li class="{% if current_url ==  login_url %}active{% endif %}">
+                <a href="{{ login_url }}"><i class="fa fa-sign-out" aria-hidden="true"></i> Login</a>
+              </li>
+            {% endif %}
           </ul>
         </div>
       </div>
@@ -34,5 +49,7 @@
       {% endblock %}
     </div>
     <script src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}"></script>
+    {% block scripts %}
+    {% endblock %}
   </body>
 </html>
